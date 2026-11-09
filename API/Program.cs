@@ -17,10 +17,11 @@ builder.Services.AddSingleton<DeliverySlotService>();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+app.MapOpenApi();
+app.UseSwaggerUI(options =>
 {
-    app.MapOpenApi();
-}
+    options.SwaggerEndpoint("/openapi/v1.json", "Menuzi Technical Test API v1");
+});
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
