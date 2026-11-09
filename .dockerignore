@@ -1,0 +1,12 @@
+**/bin/
+**/obj/
+**/.vs/
+**/.git/
+**/*.user
+**/*.suo
+**/.env
+**/Dockerfile*
+**/docker-compose*
+**/compose*.yml
+**/compose*.yaml
+**/TESTS/
