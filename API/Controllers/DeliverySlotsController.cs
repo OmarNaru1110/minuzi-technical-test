@@ -1,7 +1,6 @@
 using Menuzi.TechnicalTest.Api.Models;
 using Menuzi.TechnicalTest.Core.Interfaces;
 using Menuzi.TechnicalTest.Core.Models;
-using Menuzi.TechnicalTest.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Menuzi.TechnicalTest.Api.Controllers;
@@ -10,7 +9,7 @@ namespace Menuzi.TechnicalTest.Api.Controllers;
 [Route("api/delivery-slots")]
 public sealed class DeliverySlotsController(
     IProductCatalog catalog,
-    DeliverySlotService deliverySlotService) : ControllerBase
+    IDeliverySlotService deliverySlotService) : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType<DeliverySlotsResponse>(StatusCodes.Status200OK)]

@@ -15,7 +15,7 @@ public sealed class DeliverySlotServiceTests
     private static readonly Product External =
         new("external", "External", ProductType.External);
 
-    private static DeliverySlotService ServiceAt(DateTime now)
+    private static IDeliverySlotService ServiceAt(DateTime now)
     {
         return new DeliverySlotService(new FixedClock(now));
     }

@@ -58,9 +58,11 @@ public sealed class DeliverySlotsControllerTests
 
     private static DeliverySlotsController CreateController()
     {
+        IDeliverySlotService deliverySlots = new DeliverySlotService(new FixedClock(Now));
+
         return new DeliverySlotsController(
             new InMemoryProductCatalog(),
-            new DeliverySlotService(new FixedClock(Now)));
+            deliverySlots);
     }
 
     private sealed class FixedClock(DateTime now) : IClock

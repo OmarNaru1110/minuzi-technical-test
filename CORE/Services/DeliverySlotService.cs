@@ -3,7 +3,7 @@ using Menuzi.TechnicalTest.Core.Models;
 
 namespace Menuzi.TechnicalTest.Core.Services;
 
-public sealed class DeliverySlotService(IClock clock)
+public sealed class DeliverySlotService(IClock clock) : IDeliverySlotService
 {
     public const int SchedulingWindowDays = 14;
 
