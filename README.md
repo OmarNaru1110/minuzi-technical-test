@@ -67,8 +67,11 @@ dotnet dev-certs https --trust
 
 ```text
 GET /api/products
-GET /api/delivery-slots?productIds=warehouse-milk&productIds=fresh-sourdough
+GET /api/carts
+GET /api/carts/{cartId}/delivery-slots
 ```
+
+Seeded cart ids include `cart-all`, `cart-warehouse-fresh`, `cart-warehouse-external`, `cart-fresh-external`, `cart-warehouse`, `cart-fresh`, `cart-external`, and `cart-empty`.
 
 ## Tests
 
