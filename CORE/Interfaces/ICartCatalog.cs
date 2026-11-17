@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using Menuzi.TechnicalTest.Core.Models;
 
 namespace Menuzi.TechnicalTest.Core.Interfaces;
