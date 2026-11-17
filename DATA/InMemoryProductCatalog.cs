@@ -21,16 +21,7 @@ public sealed class InMemoryProductCatalog : IProductCatalog
 
     public bool TryGetById(string id, out Product product)
     {
-        foreach (var p in Products)
-        {
-            if (p.Id == id)
-            {
-                product = p;
-                return true;
-            }
-        }
-
-        product = null!;
-        return false;
+        product = Products.SingleOrDefault(p => p.Id == id);
+        return product is not null;
     }
 }
