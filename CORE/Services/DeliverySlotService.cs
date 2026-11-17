@@ -29,7 +29,7 @@ public sealed class DeliverySlotService(IClock clock) : IDeliverySlotService
 
         var now = clock.Now;
         var today = DateOnly.FromDateTime(now);
-        var lastDate = today.AddDays(SchedulingWindowDays);
+        var lastDate = today.AddDays(SchedulingWindowDays - 1);
         var currentTime = TimeOnly.FromDateTime(now);
         var slots = new List<DeliverySlot>();
 

@@ -55,8 +55,8 @@ public sealed class CartsControllerTests
         var ok = Assert.IsType<OkObjectResult>(result.Result);
         var response = Assert.IsType<DeliverySlotsResponse>(ok.Value);
 
-        Assert.Equal(11, response.Slots.Count);
-        Assert.Equal(151, response.Slots.Sum(slot => slot.Times.Count));
+        Assert.Equal(10, response.Slots.Count);
+        Assert.Equal(137, response.Slots.Sum(slot => slot.Times.Count));
         Assert.Equal("2026-11-09", response.Slots[0].Date);
     }
 
