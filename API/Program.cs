@@ -13,6 +13,7 @@ builder.Services
 builder.Services.AddOpenApi();
 builder.Services.AddSingleton<IClock, SystemClock>();
 builder.Services.AddSingleton<IProductCatalog, InMemoryProductCatalog>();
+builder.Services.AddSingleton<ICartCatalog, InMemoryCartCatalog>();
 builder.Services.AddSingleton<IDeliverySlotService, DeliverySlotService>();
 
 var app = builder.Build();
