@@ -27,8 +27,11 @@ public sealed class DeliverySlotsControllerTests
         var ok = Assert.IsType<OkObjectResult>(result.Result);
         var response = Assert.IsType<DeliverySlotsResponse>(ok.Value);
 
-        Assert.Equal(84, response.Slots.Count);
-        Assert.Contains(response.Slots, slot => slot.IsGreen);
+        Assert.Equal(6, response.Slots.Count);
+        Assert.Equal(84, response.Slots.Sum(slot => slot.Times.Count));
+        Assert.Contains(response.Slots, slot => slot.Times.Any(time => time.IsGreen));
+        Assert.Equal("2026-11-12", response.Slots[0].Date);
+        Assert.Equal("13:00", response.Slots[0].Times[0].StartTime);
     }
 
     [Fact]

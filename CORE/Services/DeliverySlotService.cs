@@ -40,6 +40,8 @@ public sealed class DeliverySlotService(IClock clock)
                 continue;
             }
 
+            var times = new List<DeliveryTime>();
+
             for (var hour = FirstSlotHour; hour < LastSlotHour; hour++)
             {
                 var start = new TimeOnly(hour, 0);
@@ -49,19 +51,26 @@ public sealed class DeliverySlotService(IClock clock)
                     continue;
                 }
 
-                slots.Add(new DeliverySlot(
-                    date,
+                times.Add(new DeliveryTime(
                     start,
                     start.Add(TimeSpan.FromHours(1)),
                     IsGreen(start)));
             }
+
+            if (times.Count == 0)
+            {
+                continue;
+            }
+
+            slots.Add(new DeliverySlot(
+                date,
+                times
+                    .OrderByDescending(time => time.IsGreen)
+                    .ThenBy(time => time.Start)
+                    .ToList()));
         }
 
-        return slots
-            .OrderBy(slot => slot.Date)
-            .ThenByDescending(slot => slot.IsGreen)
-            .ThenBy(slot => slot.Start)
-            .ToList();
+        return slots;
     }
 
     private static bool AllProductsEligible(

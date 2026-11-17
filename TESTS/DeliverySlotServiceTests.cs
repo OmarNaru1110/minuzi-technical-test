@@ -26,9 +26,8 @@ public sealed class DeliverySlotServiceTests
         var now = new DateTime(2026, 11, 9, 10, 30, 0);
 
         var slots = ServiceAt(now).GetSlots(new[] { Warehouse, FreshFood, External });
-        var dates = slots.Select(slot => slot.Date).Distinct().ToList();
 
-        Assert.Equal(84, slots.Count);
+        Assert.Equal(84, slots.Sum(slot => slot.Times.Count));
         Assert.Equal(
             new[]
             {
@@ -39,10 +38,10 @@ public sealed class DeliverySlotServiceTests
                 new DateOnly(2026, 11, 19),
                 new DateOnly(2026, 11, 20)
             },
-            dates);
+            slots.Select(slot => slot.Date).ToArray());
         Assert.All(
-            dates,
-            date => Assert.True(date.DayOfWeek is >= DayOfWeek.Tuesday and <= DayOfWeek.Friday));
+            slots,
+            slot => Assert.True(slot.Date.DayOfWeek is >= DayOfWeek.Tuesday and <= DayOfWeek.Friday));
     }
 
     [Fact]
@@ -52,12 +51,12 @@ public sealed class DeliverySlotServiceTests
 
         var slots = ServiceAt(now).GetSlots(new[] { Warehouse });
         var today = new DateOnly(2026, 11, 9);
-        var todaySlots = slots.Where(slot => slot.Date == today).ToList();
+        var todayTimes = slots.Single(slot => slot.Date == today).Times;
 
-        Assert.Equal(151, slots.Count);
-        Assert.Equal(11, todaySlots.Count);
-        Assert.Equal(new TimeOnly(11, 0), todaySlots.Min(slot => slot.Start));
-        Assert.DoesNotContain(todaySlots, slot => slot.Start <= new TimeOnly(10, 30));
+        Assert.Equal(151, slots.Sum(slot => slot.Times.Count));
+        Assert.Equal(11, todayTimes.Count);
+        Assert.Equal(new TimeOnly(11, 0), todayTimes.Min(time => time.Start));
+        Assert.DoesNotContain(todayTimes, time => time.Start <= new TimeOnly(10, 30));
     }
 
     [Fact]
@@ -68,7 +67,7 @@ public sealed class DeliverySlotServiceTests
         var slots = ServiceAt(now).GetSlots(new[] { Warehouse, FreshFood });
 
         Assert.Equal(new DateOnly(2026, 11, 9), slots[0].Date);
-        Assert.Equal(151, slots.Count);
+        Assert.Equal(151, slots.Sum(slot => slot.Times.Count));
     }
 
     [Fact]
@@ -78,13 +77,13 @@ public sealed class DeliverySlotServiceTests
 
         var slots = ServiceAt(now).GetSlots(new[] { Warehouse });
         var today = new DateOnly(2026, 11, 13);
-        var todaySlots = slots.Where(slot => slot.Date == today).ToList();
+        var todayTimes = slots.Single(slot => slot.Date == today).Times;
 
-        Assert.Equal(144, slots.Count);
-        Assert.Equal(4, todaySlots.Count);
+        Assert.Equal(144, slots.Sum(slot => slot.Times.Count));
+        Assert.Equal(4, todayTimes.Count);
         Assert.Equal(
             new[] { 18, 19, 20, 21 },
-            todaySlots.Select(slot => slot.Start.Hour).OrderBy(hour => hour).ToArray());
+            todayTimes.Select(time => time.Start.Hour).OrderBy(hour => hour).ToArray());
     }
 
     [Fact]
@@ -94,7 +93,7 @@ public sealed class DeliverySlotServiceTests
 
         var slots = ServiceAt(now).GetSlots(new[] { Warehouse });
 
-        Assert.Equal(140, slots.Count);
+        Assert.Equal(140, slots.Sum(slot => slot.Times.Count));
         Assert.DoesNotContain(slots, slot => slot.Date == new DateOnly(2026, 11, 13));
         Assert.Equal(new DateOnly(2026, 11, 16), slots[0].Date);
     }
@@ -106,7 +105,7 @@ public sealed class DeliverySlotServiceTests
 
         var slots = ServiceAt(now).GetSlots(new[] { FreshFood });
 
-        Assert.Equal(140, slots.Count);
+        Assert.Equal(140, slots.Sum(slot => slot.Times.Count));
         Assert.DoesNotContain(slots, slot => slot.Date == new DateOnly(2026, 11, 9));
         Assert.Equal(new DateOnly(2026, 11, 10), slots[0].Date);
     }
@@ -118,11 +117,11 @@ public sealed class DeliverySlotServiceTests
 
         var slots = ServiceAt(now).GetSlots(new[] { FreshFood });
         var today = new DateOnly(2026, 11, 9);
-        var todaySlots = slots.Where(slot => slot.Date == today).ToList();
+        var todayTimes = slots.Single(slot => slot.Date == today).Times;
 
-        Assert.Equal(150, slots.Count);
-        Assert.Equal(10, todaySlots.Count);
-        Assert.Equal(new TimeOnly(12, 0), todaySlots.Min(slot => slot.Start));
+        Assert.Equal(150, slots.Sum(slot => slot.Times.Count));
+        Assert.Equal(10, todayTimes.Count);
+        Assert.Equal(new TimeOnly(12, 0), todayTimes.Min(time => time.Start));
     }
 
     [Fact]
@@ -132,9 +131,9 @@ public sealed class DeliverySlotServiceTests
 
         var slots = ServiceAt(now).GetSlots(new[] { External });
 
-        Assert.Equal(98, slots.Count);
+        Assert.Equal(98, slots.Sum(slot => slot.Times.Count));
         Assert.Equal(new DateOnly(2026, 11, 17), slots[0].Date);
-        Assert.Equal(7, slots.Select(slot => slot.Date).Distinct().Count());
+        Assert.Equal(7, slots.Count);
     }
 
     [Fact]
@@ -144,9 +143,9 @@ public sealed class DeliverySlotServiceTests
 
         var slots = ServiceAt(now).GetSlots(new[] { External });
 
-        Assert.Equal(112, slots.Count);
+        Assert.Equal(112, slots.Sum(slot => slot.Times.Count));
         Assert.Equal(new DateOnly(2026, 11, 17), slots[0].Date);
-        Assert.Equal(8, slots.Select(slot => slot.Date).Distinct().Count());
+        Assert.Equal(8, slots.Count);
     }
 
     [Fact]
@@ -156,9 +155,9 @@ public sealed class DeliverySlotServiceTests
 
         var slots = ServiceAt(now).GetSlots(new[] { External });
 
-        Assert.Equal(112, slots.Count);
+        Assert.Equal(112, slots.Sum(slot => slot.Times.Count));
         Assert.Equal(new DateOnly(2026, 11, 17), slots[0].Date);
-        Assert.Equal(8, slots.Select(slot => slot.Date).Distinct().Count());
+        Assert.Equal(8, slots.Count);
     }
 
     [Fact]
@@ -167,14 +166,26 @@ public sealed class DeliverySlotServiceTests
         var now = new DateTime(2026, 11, 9, 10, 30, 0);
 
         var slots = ServiceAt(now).GetSlots(new[] { Warehouse });
-        var day = slots.Where(slot => slot.Date == new DateOnly(2026, 11, 10)).ToList();
+        var day = slots.Single(slot => slot.Date == new DateOnly(2026, 11, 10)).Times;
 
         Assert.Equal(
             new[] { 13, 14, 20, 21, 8, 9, 10, 11, 12, 15, 16, 17, 18, 19 },
-            day.Select(slot => slot.Start.Hour).ToArray());
+            day.Select(time => time.Start.Hour).ToArray());
         Assert.Equal(
             new[] { true, true, true, true, false, false, false, false, false, false, false, false, false, false },
-            day.Select(slot => slot.IsGreen).ToArray());
+            day.Select(time => time.IsGreen).ToArray());
+    }
+
+    [Fact]
+    public void Slots_AreGroupedByDate()
+    {
+        var now = new DateTime(2026, 11, 9, 10, 30, 0);
+
+        var slots = ServiceAt(now).GetSlots(new[] { Warehouse });
+
+        Assert.Equal(11, slots.Count);
+        Assert.Equal(slots.Select(slot => slot.Date).Distinct().Count(), slots.Count);
+        Assert.All(slots, slot => Assert.NotEmpty(slot.Times));
     }
 
     [Fact]
@@ -201,18 +212,18 @@ public sealed class DeliverySlotServiceTests
     }
 
     [Fact]
-    public void Slots_AreOneHourLongAndWithinOpeningHours()
+    public void Times_AreOneHourLongAndWithinOpeningHours()
     {
         var now = new DateTime(2026, 11, 9, 10, 30, 0);
 
         var slots = ServiceAt(now).GetSlots(new[] { Warehouse, FreshFood, External });
 
-        Assert.All(slots, slot =>
+        Assert.All(slots, slot => Assert.All(slot.Times, time =>
         {
-            Assert.Equal(1, (slot.End - slot.Start).TotalHours);
-            Assert.InRange(slot.Start.Hour, 8, 21);
-            Assert.Equal(slot.Start.Hour + 1, slot.End.Hour);
-        });
+            Assert.Equal(1, (time.End - time.Start).TotalHours);
+            Assert.InRange(time.Start.Hour, 8, 21);
+            Assert.Equal(time.Start.Hour + 1, time.End.Hour);
+        }));
     }
 
     [Fact]
